@@ -42,6 +42,7 @@ public class GhostPreviewManager : MonoBehaviour
             yield return ChangeIsRecovering(true);
 
             //Change isDead to true
+            yield return new WaitForSeconds(3f);
             yield return ChangeIsRecovering(false);
             yield return ChangeIsDead(true);
         }
