@@ -4,17 +4,19 @@ using UnityEngine;
 
 public class LevelGenerator : MonoBehaviour
 {
-    // [0] - Outside Corner
-    // [1] - Outside Wall
-    // [2] - Inside Corner
-    // [3] - Inside Wall
-    // [4] - Standard Pallet
-    // [5] - Power Pallet
-    // [6] - Junction Piece
+    // [PieceType]  - Tile Type             - [LevelMapVal]
+    // [0]          - Outside Corner         - [1]
+    // [1]          - Outside Wall           - [2]
+    // [2]          - Inside Corner          - [3]
+    // [3]          - Inside Wall            - [4]
+    // [4]          - Standard Pallet        - [5]
+    // [5]          - Power Pallet           - [6]
+    // [6]          - Junction Piece         - [7]
     private string manualMap = "ManualMap";
     public GameObject[] mapPieces;
     public Transform levelParent;
     private int[,] levelMap =
+    // Original Case
     {
         {1,2,2,2,2,2,2,2,2,2,2,2,2,7},
         {2,5,5,5,5,5,5,5,5,5,5,5,5,4},
@@ -32,6 +34,44 @@ public class LevelGenerator : MonoBehaviour
         {2,2,2,2,2,1,5,3,3,0,4,0,0,0},
         {0,0,0,0,0,0,5,0,0,0,4,0,0,0},
     };
+
+    // Test Case 1
+    //    {
+    //    {1,2,2,2,2,2,2,2,2,2,2,2,2,2,7},
+    //    {2,5,5,5,5,5,5,5,5,5,5,5,5,5,4},
+    //    {2,5,3,4,4,4,3,5,3,4,4,4,3,5,4},
+    //    {2,6,4,0,0,0,4,5,4,0,0,0,4,5,4},
+    //    {2,5,3,4,3,3,3,5,3,4,4,4,3,5,3},
+    //    {2,5,5,5,4,4,5,5,5,5,5,5,5,5,5},
+    //    {2,5,3,4,3,3,3,5,3,4,3,5,3,4,4},
+    //    {2,5,3,4,4,4,3,5,4,0,4,5,3,4,3},
+    //    {2,5,5,5,5,5,5,5,4,0,4,5,5,5,4},
+    //    {1,2,2,2,2,2,1,5,4,0,3,4,3,0,4},
+    //    {0,0,0,0,0,0,2,5,4,3,4,4,3,0,3},
+    //    {0,0,0,0,0,0,2,5,4,4,0,0,0,0,0},
+    //    {0,0,0,0,0,0,2,5,4,4,0,3,4,4,0},
+    //    {2,2,2,2,2,2,1,5,3,3,0,4,0,0,0},
+    //    {0,0,0,0,0,0,0,5,0,0,0,4,0,0,0},
+    //};
+
+    // Test Case 2
+    //    {
+    //    {1,2,2,2,2,2,2,2,2,2,2,2,2,2,7},
+    //    {2,5,5,5,5,5,5,5,5,5,5,5,5,5,4},
+    //    {2,5,3,4,4,4,3,5,3,4,4,4,3,5,4},
+    //    {2,6,4,0,0,0,4,5,4,0,0,0,4,5,4},
+    //    {2,5,3,4,3,3,3,5,3,4,4,4,3,5,3},
+    //    {2,5,5,5,4,4,5,5,5,5,5,5,5,5,5},
+    //    {7,4,4,4,3,3,3,5,3,4,3,5,3,4,4},
+    //    {7,4,4,4,4,4,3,5,4,0,4,5,3,4,3},
+    //    {2,5,5,5,5,5,5,5,4,0,4,5,5,5,4},
+    //    {1,2,2,2,2,2,1,5,4,0,3,4,3,0,4},
+    //    {0,0,0,0,0,0,7,4,3,3,4,4,3,0,3},
+    //    {0,0,0,0,0,0,7,4,3,4,0,0,0,0,0},
+    //    {0,0,0,0,0,0,2,5,4,4,0,3,4,4,0},
+    //    {2,2,2,2,2,2,1,5,3,3,0,4,0,0,0},
+    //    {0,0,0,0,0,0,0,5,0,0,0,4,0,0,0},
+    //};
 
 
     // Start is called before the first frame update
@@ -155,14 +195,16 @@ public class LevelGenerator : MonoBehaviour
 
     void TransformToCorrectAngle(int[,] currentMap, GameObject piece, int pieceType, int currentRow, int currentCol)
     {
-        // Piece type:
-        // [0] - Outside Corner
-        // [1] - Outside Wall
-        // [2] - Inside Corner
-        // [3] - Inside Wall
-        // [4] - Standard Pallet
-        // [5] - Power Pallet
-        // [6] - Junction Piece
+
+        // [PieceType]  - Tile Type             - [LevelMapVal]
+        // [0]          - Outside Corner         - [1]
+        // [1]          - Outside Wall           - [2]
+        // [2]          - Inside Corner          - [3]
+        // [3]          - Inside Wall            - [4]
+        // [4]          - Standard Pallet        - [5]
+        // [5]          - Power Pallet           - [6]
+        // [6]          - Junction Piece         - [7]
+
         float rotationAngle = 0f;
         int leftCol = currentCol - 1;
         int rightCol = currentCol + 1;
@@ -170,15 +212,18 @@ public class LevelGenerator : MonoBehaviour
         int downRow = currentRow + 1;
         int rowLen = currentMap.GetLength(0);
         int colLen = currentMap.GetLength(1);
+
         switch (pieceType)
         {
             //Outside Corner
             case 0:
-                if(currentCol < colLen - 1 && currentRow > 0 && currentMap[currentRow,rightCol] == 2 && currentMap[upRow,currentCol] == 2){
+                if(currentCol < colLen - 1 && currentRow > 0 && (currentMap[currentRow,rightCol] == 2 || currentMap[currentRow, rightCol] == 7) && (currentMap[upRow,currentCol] == 2 || currentMap[upRow, currentCol] == 7)){
                     rotationAngle = 270f;
-                }else if(currentCol < colLen - 1 && currentRow < rowLen - 1 && currentMap[currentRow,rightCol] == 2 && currentMap[downRow,currentCol] == 2){
+                }
+                else if(currentCol < colLen - 1 && currentRow < rowLen - 1 && (currentMap[currentRow,rightCol] == 2 || currentMap[currentRow, rightCol] == 7) && (currentMap[downRow,currentCol] == 2 || currentMap[downRow, currentCol] == 7)){
                     rotationAngle = 180f;
-                }else if(currentCol > 0 && currentRow < rowLen - 1 && currentMap[currentRow,leftCol] == 2 && currentMap[downRow,currentCol] == 2){
+                }
+                else if(currentCol > 0 && currentRow < rowLen - 1 && (currentMap[currentRow,leftCol] == 2 || currentMap[currentRow, leftCol] == 7) && (currentMap[downRow,currentCol] == 2 || currentMap[downRow, currentCol] == 7)){
                     rotationAngle = 90f;
                 }
                 break;
@@ -194,6 +239,10 @@ public class LevelGenerator : MonoBehaviour
                             break;
                         }
                         rotationAngle = 90f;
+                    } 
+                    else if (currentMap[currentRow,leftCol] == 5 || currentMap[currentRow, leftCol] == 6)
+                    {
+                        rotationAngle = 180f;    
                     }
                 }
                 else
@@ -211,90 +260,93 @@ public class LevelGenerator : MonoBehaviour
                 break;
             //Inside Corner
             case 2:
-                if (currentCol < colLen - 1 && currentRow > 0 && (currentMap[currentRow, rightCol] == 4 || currentMap[currentRow, rightCol] == 3) && (currentMap[upRow, currentCol] == 4 || currentMap[upRow, currentCol] == 3))
-                {
-                    if (currentMap[upRow, rightCol] == 5 || currentMap[upRow, rightCol] == 6 || currentMap[upRow, rightCol] == 0)
-                    {
-                        rotationAngle = 270f;
-                        break;
-                    }
-                    else if (currentCol > 0 && currentRow < rowLen - 1 && (currentMap[downRow, leftCol] == 5 || currentMap[downRow, leftCol] == 6 || currentMap[downRow, leftCol] == 0))
-                    {
-                        if ((currentMap[currentRow, leftCol] == 4 || currentMap[currentRow, leftCol] == 3) && (currentMap[downRow, currentCol] == 4 || currentMap[downRow, currentCol] == 3) && (currentMap[upRow, rightCol] == 4 || currentMap[upRow, rightCol] == 3))
-                        {
-                            rotationAngle = 90f;
-                            break;
-                        }
-                        rotationAngle = 270f;
-                        break;
-                    }
-                    else if (currentRow < rowLen - 1 && currentCol < colLen - 1 && (currentMap[downRow, rightCol] == 0 || currentMap[downRow, rightCol] == 5 || currentMap[downRow, rightCol] == 6))
-                    {
-                        rotationAngle = 180f;
-                        break;
-                    }
-                }
-                else if (currentCol < colLen - 1 && currentRow < rowLen - 1 && (currentMap[currentRow, rightCol] == 4 || currentMap[currentRow, rightCol] == 3) && (currentMap[downRow, currentCol] == 4 || currentMap[downRow, currentCol] == 3))
-                {
-                    if (currentRow == 0)
-                    {
-                        rotationAngle = 180f;
-                        break;
-                    }
-                    if (currentMap[downRow, rightCol] == 3)
-                    {
-                        break;
-                    }
-                    if (currentMap[downRow, rightCol] == 5 || currentMap[downRow, rightCol] == 6 || currentMap[downRow, rightCol] == 0)
-                    {
-                        rotationAngle = 180f;
-                        break;
-                    }
-                    else if (currentCol > 0 && currentRow > 0 && (currentMap[upRow, leftCol] == 5 || currentMap[upRow, leftCol] == 6 || currentMap[upRow, leftCol] == 0))
-                    {
-                        rotationAngle = 180f;
-                        break;
-                    }
-                }
-                else if (currentCol > 0 && currentRow < rowLen - 1 && (currentMap[currentRow, leftCol] == 4 || currentMap[currentRow, leftCol] == 3) && (currentMap[downRow, currentCol] == 4 || currentMap[downRow, currentCol] == 3))
-                {
-                    if (currentRow == 0)
-                    {
-                        rotationAngle = 90f;
-                        break;
-                    }
-                    if (currentMap[downRow, leftCol] == 3)
-                    {
-                        break;
-                    }
-                    if (currentMap[downRow, leftCol] == 5 || currentMap[downRow, leftCol] == 6 || currentMap[downRow, leftCol] == 0)
-                    {
-                        rotationAngle = 90f;
-                        break;
-                    }
-                    else if (currentCol < colLen - 1 && currentRow > 0 && (currentMap[upRow, rightCol] == 5 || currentMap[upRow, rightCol] == 6 || currentMap[upRow, rightCol] == 0))
-                    {
-                        rotationAngle = 90f;
-                        break;
-                    }
-                }
-                else if (currentCol == colLen - 1 && currentRow < rowLen - 1 && ((currentMap[currentRow, leftCol] == 5 || currentMap[currentRow, leftCol] == 6 || currentMap[currentRow, leftCol] == 0) && (currentMap[downRow, currentCol] == 5 || currentMap[downRow, currentCol] == 6 || currentMap[downRow, currentCol] == 0)))
+                // Check outside surrounding tiles for normal
+                if (currentRow > 0 && currentRow < rowLen - 1 && currentCol > 0 && (currentMap[currentRow, leftCol] == 5 || currentMap[currentRow, leftCol] == 6 || currentMap[currentRow, leftCol] == 0) && (currentMap[downRow, leftCol] == 5 || currentMap[downRow, leftCol] == 6 || currentMap[downRow, leftCol] == 0) && (currentMap[downRow, currentCol] == 5 || currentMap[downRow, currentCol] == 6 || currentMap[downRow, currentCol] == 0))
                 {
                     rotationAngle = 270f;
                     break;
                 }
-                else if (currentCol == colLen - 1 && currentRow > 0 && ((currentMap[currentRow, leftCol] == 5 || currentMap[currentRow, leftCol] == 6 || currentMap[currentRow, leftCol] == 0) && (currentMap[upRow, currentCol] == 5 || currentMap[upRow, currentCol] == 6 || currentMap[upRow, currentCol] == 0)))
+                else if (currentRow > 0 && currentCol > 0 && (currentMap[currentRow, leftCol] == 5 || currentMap[currentRow, leftCol] == 6 || currentMap[currentRow, leftCol] == 0) && (currentMap[upRow, leftCol] == 5 || currentMap[upRow, leftCol] == 6 || currentMap[upRow, leftCol] == 0) && (currentMap[upRow, currentCol] == 5 || currentMap[upRow, currentCol] == 6 || currentMap[upRow, currentCol] == 0))
                 {
                     rotationAngle = 180f;
                     break;
                 }
-                else if (currentCol == 0 && currentRow > 0 && ((currentMap[currentRow, rightCol] == 5 || currentMap[currentRow, rightCol] == 6 || currentMap[currentRow, rightCol] == 0) && (currentMap[upRow, currentCol] == 5 || currentMap[upRow, currentCol] == 6 || currentMap[upRow, currentCol] == 0)))
+                else if (currentRow > 0 && currentCol < colLen - 1 && (currentMap[currentRow, rightCol] == 5 || currentMap[currentRow, rightCol] == 6 || currentMap[currentRow, rightCol] == 0) && (currentMap[upRow, rightCol] == 5 || currentMap[upRow, rightCol] == 6 || currentMap[upRow, rightCol] == 0) && (currentMap[upRow, currentCol] == 5 || currentMap[upRow, currentCol] == 6 || currentMap[upRow, currentCol] == 0))
                 {
                     rotationAngle = 90f;
                     break;
                 }
+                else if (currentRow > 0 && currentRow < rowLen - 1 && currentCol < colLen - 1 && (currentMap[currentRow, rightCol] == 5 || currentMap[currentRow, rightCol] == 6 || currentMap[currentRow, rightCol] == 0) && (currentMap[downRow, rightCol] == 5 || currentMap[downRow, rightCol] == 6 || currentMap[downRow, rightCol] == 0) && (currentMap[downRow, currentCol] == 5 || currentMap[downRow, currentCol] == 6 || currentMap[downRow, currentCol] == 0))
+                {
+                    break;
+                }
+                // Check outsie surrounding tiles for opposite angles
+                else if (currentRow > 1 && currentCol < colLen - 2 && (currentMap[upRow, rightCol] == 5 || currentMap[upRow, rightCol] == 6 || currentMap[upRow, rightCol] == 0) && (currentMap[upRow - 1, rightCol] == 5 || currentMap[upRow - 1, rightCol] == 6 || currentMap[upRow - 1, rightCol] == 0) && (currentMap[upRow, rightCol + 1] == 5 || currentMap[upRow, rightCol + 1] == 6 || currentMap[upRow, rightCol + 1] == 0))
+                {
+                    rotationAngle = 270f;
+                    break;
+                }
+                else if (currentRow > 0 && currentRow < rowLen - 2 && currentCol < colLen - 2 && (currentMap[downRow, rightCol] == 5 || currentMap[downRow, rightCol] == 6 || currentMap[downRow, rightCol] == 0) && (currentMap[downRow + 1, rightCol] == 5 || currentMap[downRow + 1, rightCol] == 6 || currentMap[downRow + 1, rightCol] == 0) && (currentMap[downRow, rightCol + 1] == 5 || currentMap[downRow, rightCol + 1] == 6 || currentMap[downRow, rightCol + 1] == 0))
+                {
+                    rotationAngle = 180f;
+                    break;
+                }
+                else if (currentRow > 0 && currentRow < rowLen - 2 && currentCol > 1 && (currentMap[downRow, leftCol] == 5 || currentMap[downRow, leftCol] == 6 || currentMap[downRow, leftCol] == 0) && (currentMap[downRow + 1, leftCol] == 5 || currentMap[downRow + 1, leftCol] == 6 || currentMap[downRow + 1, leftCol] == 0) && (currentMap[downRow, leftCol - 1] == 5 || currentMap[downRow, leftCol - 1] == 6 || currentMap[downRow, leftCol - 1] == 0))
+                {
+                    rotationAngle = 90f;
+                    break;
+                }
+                else if (currentRow > 1 && currentCol > 1 && (currentMap[upRow, leftCol] == 5 || currentMap[upRow, leftCol] == 6 || currentMap[upRow, leftCol] == 0) && (currentMap[upRow - 1, leftCol] == 5 || currentMap[upRow - 1, leftCol] == 6 || currentMap[upRow - 1, leftCol] == 0) && (currentMap[upRow, leftCol - 1] == 5 || currentMap[upRow, leftCol - 1] == 6 || currentMap[upRow, leftCol - 1] == 0))
+                {
+                    break;
+                }
+                // Check narrow angles
+                else if (currentRow > 0 && currentCol < colLen - 1 && (currentMap[upRow, rightCol] == 5 || currentMap[upRow, rightCol] == 6))
+                {
+                    rotationAngle = 270f;
+                    break;
+                }
+                else if (currentRow > 0 && currentRow < rowLen - 1 && currentCol < colLen - 1 && (currentMap[downRow, rightCol] == 5 || currentMap[downRow, rightCol] == 6))
+                {
+                    rotationAngle = 180f;
+                    break;
+                }
+                else if (currentRow > 0 && currentRow < rowLen - 1 && currentCol > 0 && (currentMap[downRow, leftCol] == 5 || currentMap[downRow, leftCol] == 6))
+                {
+                    rotationAngle = 90f;
+                    break;
+                }
+                else if (currentRow > 0 && currentCol > 0 && (currentMap[upRow, leftCol] == 5 || currentMap[upRow, leftCol] == 6)) 
+                {
+                    break;
+                }
+                // Check edge cases
+                else if (currentRow == 0)
+                {
+                    if (currentCol > 0 && (currentMap[currentRow, leftCol] == 5 || currentMap[currentRow, leftCol] == 6 || currentMap[currentRow, leftCol] == 0))
+                    {
+                        rotationAngle = 180f;
+                        break;
+                    }
+                    else
+                    {
+                        rotationAngle = 90f;
+                        break;
+                    }
+                }
+                // Check edge cases
+                else if (currentRow == rowLen - 1)
+                {
+                    if (currentCol > 0 && (currentMap[currentRow, leftCol] == 5 || currentMap[currentRow, leftCol] == 6 || currentMap[currentRow, leftCol] == 0))
+                    {
+                        rotationAngle = 270f;
+                        break;
+                    }
+                    break;
+                }
                 break;
-                // Inside Wall
+
+            // Inside Wall
             case 3:
                 if (currentRow > 0 && (currentMap[upRow, currentCol] == 5 || currentMap[upRow, currentCol] == 6 || currentMap[upRow, currentCol] == 0))
                 {
@@ -323,39 +375,39 @@ public class LevelGenerator : MonoBehaviour
                 break;
                 // T Junction
             case 6:
-                if (currentRow < rowLen - 1 && currentCol > 0 && currentMap[currentRow, leftCol] == 2 && currentMap[downRow, currentCol] == 4)
+                if (currentRow < rowLen - 1 && currentCol > 0 && (currentMap[currentRow, leftCol] == 2 || currentMap[currentRow, leftCol] == 1) && currentMap[downRow, currentCol] == 4)
                 {
                     rotationAngle = 270f;
                     break;
                 }
-                else if (currentRow < rowLen - 1 && currentCol < colLen - 1 && currentMap[downRow, currentCol] == 2 && currentMap[currentRow, rightCol] == 4)
+                else if (currentRow < rowLen - 1 && currentCol < colLen - 1 && (currentMap[downRow, currentCol] == 1 || currentMap[downRow, currentCol] == 2 ) && currentMap[currentRow, rightCol] == 4)
                 {
                     rotationAngle = 0f;
                     break;
                 }
-                else if (currentRow > 0 && currentCol < colLen - 1 && currentMap[currentRow, rightCol] == 2 && currentMap[upRow, currentCol] == 4)
+                else if (currentRow > 0 && currentCol < colLen - 1 && (currentMap[currentRow, rightCol] == 1 || currentMap[currentRow, rightCol] == 2) && currentMap[upRow, currentCol] == 4)
                 {
                     rotationAngle = 90f;
                     break;
                 }
-                else if (currentRow > 0 && currentCol > 0 && currentMap[upRow, currentCol] == 2 && currentMap[currentRow, leftCol] == 4)
+                else if (currentRow > 0 && currentCol > 0 && (currentMap[upRow, currentCol] == 2 || currentMap[upRow, currentCol] == 1 ) && currentMap[currentRow, leftCol] == 4)
                 {
                     rotationAngle = 180f;
                     break;
                 }
-                else if (currentRow < rowLen - 1 && currentCol > 0 && currentMap[currentRow, leftCol] == 4 && currentMap[downRow, currentCol] == 2)
+                else if (currentRow < rowLen - 1 && currentCol > 0 && currentMap[currentRow, leftCol] == 4 && (currentMap[downRow, currentCol] == 2 || currentMap[downRow, currentCol] == 1))
                 {
                     rotationAngle = 0f;
                 }
-                else if (currentRow < rowLen - 1 && currentCol < colLen - 1 && currentMap[currentRow, rightCol] == 2 && currentMap[downRow, currentCol] == 4)
+                else if (currentRow < rowLen - 1 && currentCol < colLen - 1 && (currentMap[currentRow, rightCol] == 2 || currentMap[currentRow, rightCol] == 1) && currentMap[downRow, currentCol] == 4)
                 {
                     rotationAngle = 90f;
                 }
-                else if (currentRow > 0 && currentCol < colLen - 1 && currentMap[currentRow, rightCol] == 4 && currentMap[upRow, currentCol] == 4)
+                else if (currentRow > 0 && currentCol < colLen - 1 && currentMap[currentRow, rightCol] == 4 && (currentMap[upRow, currentCol] == 2 || currentMap[upRow, currentCol] == 1))
                 {
                     rotationAngle = 180f;
                 }
-                else if (currentRow > 0 && currentCol > 0 && currentMap[currentRow, leftCol] == 2 && currentMap[upRow, currentCol] == 4)
+                else if (currentRow > 0 && currentCol > 0 && (currentMap[currentRow, leftCol] == 2 || currentMap[currentRow, leftCol] == 1) && currentMap[upRow, currentCol] == 4)
                 {
                     rotationAngle = 270f;
                 }
