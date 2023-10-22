@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
@@ -10,19 +11,32 @@ public class AudioManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        introAudio.Play();
-        StartCoroutine(PlayBGAfterIntroFinish());
+        //DontDestroyOnLoad(gameObject);
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        if (currentSceneIndex == 0)
+        {
+            introAudio.loop = true;
+            introAudio.Play();
+        }
+        else
+        {
+            introAudio.loop = false;
+            introAudio.Play();
+            StartCoroutine(PlayBGAfterIntroFinish());
+        }
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
     }
 
-    private IEnumerator PlayBGAfterIntroFinish(){
+    private IEnumerator PlayBGAfterIntroFinish()
+    {
 
-        while (introAudio.isPlaying){
+        while (introAudio.isPlaying)
+        {
             yield return null;
         }
 
