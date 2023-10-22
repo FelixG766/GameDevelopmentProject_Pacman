@@ -29,22 +29,16 @@ public class BorderMovement : MonoBehaviour
         GameObject title = GameObject.Find("Title");
         GameObject subtitle = GameObject.Find("Subtitle");
         GameObject orangeGhost = GameObject.Find("OrangeGhost");
-       
+
 
         centerX = title.transform.position.x;
-        centerY = (title.transform.position.y + subtitle.transform.position.y)/2;
+        centerY = (title.transform.position.y + subtitle.transform.position.y) / 2;
         a = (centerY - orangeGhost.transform.position.y) * 0.7f;
         b = a * 3f;
 
-        //a = (top.transform.position.y - bottom.transform.position.y) / 2;
-        //b = (right.transform.position.x - left.transform.position.x) / 2;
-        //centerX = (left.transform.position.x + right.transform.position.x) / 2;
-        //centerY = (top.transform.position.y + bottom.transform.position.y) / 2;
-
 
         Vector3 currentPosition = transform.position;
-        Debug.Log(gameObject.name + "Border: " + currentPosition.y + "    " + currentPosition.x + "Center X: " + centerX);
-        t = (float)(Mathf.Atan2((float)((currentPosition.y - centerY) / a), (float)((currentPosition.x - centerX)/ b))) + adjustment * borderSetIndx;
+        t = (float)(Mathf.Atan2((float)((currentPosition.y - centerY) / a), (float)((currentPosition.x - centerX) / b))) + adjustment * borderSetIndx;
         float x = (float)(b * Mathf.Cos(t) + centerX);
         float y = (float)(a * Mathf.Sin(t) + centerY);
         float z = 0;
@@ -85,3 +79,4 @@ public class BorderMovement : MonoBehaviour
         transform.Rotate(-Vector3.forward, rotationAngle);
     }
 }
+

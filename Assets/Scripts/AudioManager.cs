@@ -7,40 +7,79 @@ public class AudioManager : MonoBehaviour
 {
     [SerializeField] private AudioSource introAudio;
     [SerializeField] private AudioSource normalAudio;
-
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private AudioSource scaredAudio;
+    [SerializeField] private AudioSource ghostDeadAudio;
+    [SerializeField] private AudioSource countDownAudio;
+    
+    void Awake()
     {
-        //DontDestroyOnLoad(gameObject);
-        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        if (currentSceneIndex == 0)
-        {
-            introAudio.loop = true;
-            introAudio.Play();
-        }
-        else
-        {
-            introAudio.loop = false;
-            introAudio.Play();
-            StartCoroutine(PlayBGAfterIntroFinish());
-        }
-
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        DontDestroyOnLoad(gameObject);
     }
 
-    // Update is called once per frame
+    void Start()
+    {
+    }
+
     void Update()
     {
     }
 
-    private IEnumerator PlayBGAfterIntroFinish()
+    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-
-        while (introAudio.isPlaying)
+        if (scene.buildIndex == 0)
         {
-            yield return null;
+            normalAudio.Stop();
+            introAudio.Stop();
+            introAudio.loop = true;
+            introAudio.Play();
         }
-
-        normalAudio.loop = true;
-        normalAudio.Play();
+        if (scene.buildIndex == 1)
+        {
+            introAudio.Stop();
+        }
     }
+
+    public void PlayCountDownAudio()
+    {
+        if (countDownAudio.isPlaying)
+        {
+            countDownAudio.Stop();
+        }
+        countDownAudio.Play();
+    }
+
+    public void PlayScaredAudio()
+    {
+        if (!scaredAudio.isPlaying)
+        {
+            introAudio.Stop();
+            normalAudio.Stop();
+            scaredAudio.Play();
+            ghostDeadAudio.Stop();
+        }
+    }
+
+    public void PlayGhostDeadAudio()
+    {
+        if (!ghostDeadAudio.isPlaying)
+        {
+            introAudio.Stop();
+            normalAudio.Stop();
+            scaredAudio.Stop();
+            ghostDeadAudio.Play();
+        }
+    }
+
+    public void ResumeNormalAudio()
+    {
+        if (!normalAudio.isPlaying)
+        {
+            introAudio.Stop();
+            normalAudio.Play();
+            scaredAudio.Stop();
+            ghostDeadAudio.Stop();
+        }
+    }
+
 }
