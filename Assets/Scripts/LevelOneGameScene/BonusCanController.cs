@@ -11,11 +11,12 @@ public class BonusCanController : MonoBehaviour
 
     private float spawnTimer;
     private LevelGenerator levelGenerator;
-    private float deltaTimeSpeed = 0.3f;
+    private float deltaTimeSpeed = 0.5f;
     [SerializeField]
     private Camera mainCamera;
     private float camH;
     private float camW;
+    private GameObject bonusCan;
 
     // Start is called before the first frame update
 
@@ -53,16 +54,18 @@ public class BonusCanController : MonoBehaviour
     {
         Vector3 spawnPos = GetRandomSpawnPosition();
 
-        GameObject bonusCan = Instantiate(bonusCanPrefab, spawnPos, Quaternion.identity);
+        bonusCan = Instantiate(bonusCanPrefab, spawnPos, Quaternion.identity);
 
-        Vector3 camCenter = new Vector3(4.48f,-4.48f,0);
+        Vector3 camCenter = new Vector3(4.48f, -4.48f, 0);
         Vector3 tarPos = camCenter - (spawnPos - camCenter);
-        bonusCan.transform.position = spawnPos;
+        if (bonusCan != null)
+        {
+            bonusCan.transform.position = spawnPos;
+            float distance = Vector3.Distance(spawnPos, tarPos);
+            float duration = distance / bonusCanSpeed;
 
-        float distance = Vector3.Distance(spawnPos, tarPos);
-        float duration = distance / bonusCanSpeed;
-
-        StartCoroutine(MoveBonusCan(bonusCan.transform, tarPos, duration));
+            StartCoroutine(MoveBonusCan(bonusCan.transform, tarPos, duration));
+        }
     }
 
     Vector3 GetRandomSpawnPosition()
@@ -102,13 +105,16 @@ public class BonusCanController : MonoBehaviour
     {
         float elapsedTime = 0;
         Vector3 startingPosition = bonusCanTransform.position;
-
-        while (elapsedTime < duration)
+        Transform transformToCheckEmpty = bonusCanTransform;
+        while (transformToCheckEmpty != null && elapsedTime < duration)
         {
             bonusCanTransform.position = Vector3.Lerp(startingPosition, targetPosition, elapsedTime / duration);
-            elapsedTime += Time.deltaTime*deltaTimeSpeed;
+            elapsedTime += Time.deltaTime * deltaTimeSpeed;
             yield return null;
         }
-        Destroy(bonusCanTransform.gameObject);
+        if (transformToCheckEmpty != null)
+        {
+            Destroy(bonusCanTransform.gameObject);
+        }
     }
 }

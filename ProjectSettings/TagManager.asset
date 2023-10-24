@@ -5,6 +5,12 @@ TagManager:
   serializedVersion: 2
   tags:
   - ExitButton
+  - PacCat
+  - Wall
+  - BonusCan
+  - Ghost
+  - PowerPill
+  - Pellet
   layers:
   - Default
   - TransparentFX
@@ -44,4 +50,7 @@ TagManager:
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: GameLayer
+    uniqueID: 673262343
     locked: 0
