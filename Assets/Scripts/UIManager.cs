@@ -17,6 +17,8 @@ public class UIManager : MonoBehaviour
     private Text ghostTimerLabelText;
     private Text gameOverText;
     private string[] heartNames = { "Life_1", "Life_2", "Life_3" };
+    private bool isGameStarted = false;
+    private bool isGameEnd = false;
 
     void Awake()
     {
@@ -37,11 +39,14 @@ public class UIManager : MonoBehaviour
     public void LoadStartScene()
     {
         SceneManager.LoadScene(0);
+        isGameEnd = true;
+        isGameStarted = false;
     }
 
     public void LoadFirstLevel()
     {
         SceneManager.LoadScene(1);
+        isGameEnd = false;
     }
 
     public void LoadSecondScene()
@@ -140,6 +145,12 @@ public class UIManager : MonoBehaviour
     public void HideCountDown()
     {
         countdownText.enabled = false;
+        isGameStarted = true;
+    }
+
+    public bool CheckGameStarted()
+    {
+        return isGameStarted;
     }
 
     public void DisplayGameOver()
@@ -154,17 +165,14 @@ public class UIManager : MonoBehaviour
 
     public void UpdateHeartIndicator(int heartRemaining)
     {
-        if (heartRemaining > 0)
+        Image heartLost = GameObject.Find(heartNames[heartRemaining]).GetComponent<Image>();
+        if (heartLost != null)
         {
-            Image heartLost = GameObject.Find(heartNames[heartRemaining]).GetComponent<Image>();
-            if (heartLost != null)
-            {
-                heartLost.enabled = false;
-            }
-            else
-            {
-                Debug.LogError("UI Image heartLost not found in the scene.");
-            }
+            heartLost.enabled = false;
+        }
+        else
+        {
+            Debug.LogError("UI Image heartLost not found in the scene.");
         }
     }
 
@@ -201,4 +209,13 @@ public class UIManager : MonoBehaviour
         return string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
     }
 
+    public void SetGameEnd(bool newVal)
+    {
+        isGameEnd = newVal;
+    }
+    
+    public bool CheckGameEnd()
+    {
+        return isGameEnd;
+    }
 }

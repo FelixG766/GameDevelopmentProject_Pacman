@@ -29,7 +29,6 @@ public class AudioManager : MonoBehaviour
     {
         if (scene.buildIndex == 0)
         {
-            Debug.Log("Triggered");
             normalAudio.Stop();
             introAudio.Stop();
             introAudio.loop = true;

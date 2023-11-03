@@ -6,6 +6,33 @@ using UnityEngine.SceneManagement;
 
 public class PacCatController : MonoBehaviour
 {
+    //Environment elements
+    private AudioManager audioManager;
+    private UIManager uIManager;
+    private GhostController ghostController;
+    private bool isGameStarted = false;
+    private bool ghostsScared = false;
+    private Coroutine scareTimerCoroutine;
+    private bool isGameOver = false;
+    private int score = 0;
+    public float countdownDuration = 4.0f;
+
+    //Generated Map Info
+    private LevelGenerator levelGenerator;
+    private int currentCol = 1;
+    private int currentRow = 1;
+
+    //Game Timer
+    private float startTime;
+    private float elapsedTime;
+
+    //Life Indicator
+    private int heartCount = 3;
+
+    //PacCat Vars
+    private Animator pacCatAnimator;
+    private bool isPacCatDead = false;
+
     //PacCat Lerping
     private Vector3 startingPosition;
     private Vector3 targetPosition;
@@ -14,11 +41,6 @@ public class PacCatController : MonoBehaviour
     private float deltaTimeSpeed = 1.5f;
     private bool isLearping = false;
     private float stepLength = 0.32f;
-
-    //Generated Map Info
-    private LevelGenerator levelGenerator;
-    private int currentCol = 1;
-    private int currentRow = 1;
 
     //PacCat audio sources
     [SerializeField]
@@ -36,29 +58,10 @@ public class PacCatController : MonoBehaviour
     [SerializeField]
     private ParticleSystem deadParticles;
 
-    //Game Timer
-    private float startTime;
-    private float elapsedTime;
-
-    //Life Indicator
-    private int heartCount = 3;
-
-    //High Level Vars
-    private AudioManager audioManager;
-    private UIManager uIManager;
-    private bool isGameStarted = false;
-    private bool ghostsScared = false;
-    private Coroutine scareTimerCoroutine;
-    private bool isGameOver = false;
-    private int score = 0;
-    public float countdownDuration = 4.0f;
-
-    //PacCat Vars
-    private Animator pacCatAnimator;
-    private bool isPacCatDead = false;
-
     //Ghost Scared State Timer
     public float scareDuration = 10.0f;
+
+
 
     void Start()
     {
@@ -122,6 +125,16 @@ public class PacCatController : MonoBehaviour
             Debug.LogWarning("UIManager object not found.");
         }
 
+        GameObject ghostControllerObject = GameObject.Find("GhostController");
+        if (ghostControllerObject != null)
+        {
+            ghostController = ghostControllerObject.GetComponent<GhostController>();
+        }
+        else
+        {
+            Debug.LogWarning("Ghost Controller object not found.");
+        }
+
         LoadGameTimer();
     }
 
@@ -157,6 +170,8 @@ public class PacCatController : MonoBehaviour
         audioManager.ResumeNormalAudio();
         //Record Game Start
         startTime = Time.time;
+        //Set game End
+        uIManager.SetGameEnd(false);
     }
 
     private void UpdateGameTimer()
@@ -320,6 +335,10 @@ public class PacCatController : MonoBehaviour
             return false;
 
         }
+        else if (ghostController.IsInSpawnArea(new int[2] { targetRow, targetCol}))
+        {
+            return false;
+        }
         else
         {
             int valueToCheck = levelGenerator.mapArray[targetRow, targetCol];
@@ -371,7 +390,6 @@ public class PacCatController : MonoBehaviour
                 score += 10;
                 uIManager.UpdateScore(score);
                 GameObject[] remainingObject = GameObject.FindGameObjectsWithTag("Pellet");
-                Debug.Log(remainingObject.Length);
                 if (remainingObject.Length == 1)
                 {
                     GameOver();
@@ -401,10 +419,10 @@ public class PacCatController : MonoBehaviour
                 pacCatAnimator.SetBool("isDead", true);
                 isPacCatDead = true;
                 heartCount--;
-                if (heartCount != 0)
+                uIManager.UpdateHeartIndicator(heartCount);
+                deadParticles.Play();
+                if (heartCount > 0)
                 {
-                    uIManager.UpdateHeartIndicator(heartCount);
-                    deadParticles.Play();
                     StartCoroutine(RespawnPacCatWithDelay());
                 }
                 else
@@ -420,8 +438,9 @@ public class PacCatController : MonoBehaviour
                     score += 300;
                     uIManager.UpdateScore(score);
                     ghostAnimator.SetBool("isDead", true);
+                    ghostController.SetGhostDeadState(other.gameObject,true);
                     audioManager.PlayGhostDeadAudio();
-                    StartCoroutine(TransitionToWalkingStateAfterDelay(2.0f, ghostAnimator));
+                    StartCoroutine(TransitionToWalkingStateAfterDelay(5.0f, ghostAnimator,other.gameObject));
                 }
             }
         }
@@ -430,6 +449,7 @@ public class PacCatController : MonoBehaviour
     private void GameOver()
     {
         uIManager.DisplayGameOver();
+        uIManager.SetGameEnd(true);
         isGameOver = true;
         SaveScoresAndTime();
         StartCoroutine(ReturnToStartSceneAfterDelay(3.0f));
@@ -453,10 +473,11 @@ public class PacCatController : MonoBehaviour
         uIManager.LoadStartScene();
     }
 
-    private IEnumerator TransitionToWalkingStateAfterDelay(float delay, Animator ghostAnimator)
+    private IEnumerator TransitionToWalkingStateAfterDelay(float delay, Animator ghostAnimator,GameObject deadGhost)
     {
         yield return new WaitForSeconds(delay);
         ghostAnimator.SetBool("isDead", false);
+        ghostController.SetGhostDeadState(deadGhost,false);
         GameObject[] ghosts = GameObject.FindGameObjectsWithTag("Ghost");
         bool ghostsAllNormal = true;
         foreach (GameObject ghost in ghosts)
@@ -550,5 +571,15 @@ public class PacCatController : MonoBehaviour
             ghostAnimator.SetBool("isRecovering", false);
             ghostAnimator.SetBool("isScared", true);
         }
+    }
+
+    public int[] GetCurrentMapGridPosition()
+    {
+        return new int[] { currentRow, currentCol};
+    }
+
+    public bool CheckPacCatDead()
+    {
+        return isPacCatDead;
     }
 }
