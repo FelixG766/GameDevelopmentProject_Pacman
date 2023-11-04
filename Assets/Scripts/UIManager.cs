@@ -8,6 +8,8 @@ public class UIManager : MonoBehaviour
     //Start Scene Components
     private Text highScoreText;
     private Text highScoreTimeText;
+    private Text lv2HighScoreText;
+    private Text lv2HighScoreTimeText;
 
     //First Level Components
     private Text scoreText;
@@ -52,6 +54,7 @@ public class UIManager : MonoBehaviour
     public void LoadSecondScene()
     {
         SceneManager.LoadScene(2);
+        isGameEnd = false;
     }
 
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -67,6 +70,11 @@ public class UIManager : MonoBehaviour
             LoadFirstLevelComponents();
 
         }
+
+        if (scene.buildIndex == 2)
+        {
+            LoadSecondLevelComponents();
+        }
     }
 
 
@@ -78,6 +86,13 @@ public class UIManager : MonoBehaviour
 
         GameObject highScoreTimeObj = GameObject.Find("HighScoreTime");
         highScoreTimeText = highScoreTimeObj.GetComponent<Text>();
+
+        GameObject lv2HighScoreObj = GameObject.Find("Lv2HighScore");
+        lv2HighScoreText = lv2HighScoreObj.GetComponent<Text>();
+
+        GameObject lv2HighScoreTimeObj = GameObject.Find("Lv2HighScoreTime");
+        lv2HighScoreTimeText = lv2HighScoreTimeObj.GetComponent<Text>();
+
     }
 
     private void UpdateStartSceneComponents()
@@ -87,6 +102,12 @@ public class UIManager : MonoBehaviour
 
         float previousTime = PlayerPrefs.GetFloat("HighScoreTime", 0.00f);
         UpdateHighScoreTime(previousTime);
+
+        int previousLv2HighScore = PlayerPrefs.GetInt("Lv2HighScore", 0);
+        UpdateLv2HighScore(previousLv2HighScore);
+
+        float previousLv2Time = PlayerPrefs.GetFloat("Lv2HighScoreLiveTime", 0.00f);
+        UpdateLv2HighScoreTime(previousLv2HighScore);
     }
 
     public void UpdateHighScoreTime(float timeInSeconds)
@@ -97,6 +118,16 @@ public class UIManager : MonoBehaviour
     public void UpdateHighScore(int score)
     {
         highScoreText.text = score.ToString();
+    }
+
+    public void UpdateLv2HighScoreTime(float timeInSeconds)
+    {
+        lv2HighScoreTimeText.text = FormatTime(timeInSeconds);
+    }
+
+    public void UpdateLv2HighScore(int score)
+    {
+        lv2HighScoreText.text = score.ToString();
     }
 
     private void LoadFirstLevelComponents()
@@ -130,6 +161,37 @@ public class UIManager : MonoBehaviour
         GameObject gameOverTextLabelObj = GameObject.Find("GameOverTextLabel");
         gameOverText = gameOverTextLabelObj.GetComponent<Text>();
 
+    }
+
+    private void LoadSecondLevelComponents()
+    {
+        GameObject exitButton = GameObject.FindGameObjectWithTag("ExitButton");
+        if (exitButton != null)
+        {
+            Button quitButtonComponent = exitButton.GetComponent<Button>();
+            if (quitButtonComponent != null)
+            {
+                quitButtonComponent.onClick.AddListener(LoadStartScene);
+            }
+        }
+
+        GameObject scoreValueObj = GameObject.Find("ScoreValue");
+        scoreText = scoreValueObj.GetComponent<Text>();
+
+        GameObject countDownLabelObj = GameObject.Find("CountDownLabel");
+        countdownText = countDownLabelObj.GetComponent<Text>();
+
+        GameObject gameTimerObj = GameObject.Find("GameTimeValue");
+        gameTimerText = gameTimerObj.GetComponent<Text>();
+
+        GameObject ghostTimerLabelObj = GameObject.Find("GhostTimeValue");
+        ghostTimerText = ghostTimerLabelObj.GetComponent<Text>();
+
+        GameObject ghostTimerValueObj = GameObject.Find("GhostTimerLabel");
+        ghostTimerLabelText = ghostTimerValueObj.GetComponent<Text>();
+
+        GameObject gameOverTextLabelObj = GameObject.Find("GameOverTextLabel");
+        gameOverText = gameOverTextLabelObj.GetComponent<Text>();
     }
 
     public void UpdateScore(int score)

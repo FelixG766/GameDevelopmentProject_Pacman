@@ -38,6 +38,10 @@ public class AudioManager : MonoBehaviour
         {
             introAudio.Stop();
         }
+        if (scene.buildIndex == 2)
+        {
+            introAudio.Stop();
+        }
     }
 
     public void PlayCountDownAudio()
